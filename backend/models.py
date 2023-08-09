@@ -1,43 +1,52 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from database import Base, engine
 
 class User(Base):
     __tablename__ = "users"
-
     id = Column(Integer, unique=True, primary_key=True, index=True)
-    name = Column(String)
-    email = Column(String, unique=True)
-    profile_picture = Column(String)  # Store file path or URL
-    password_hash = Column(String, unique=True)
+    username = Column(String(255))
+    email = Column(String(255), unique=True)
+    profile_picture = Column(String(255))
+    password = Column(String(255), unique=True)
+
+class Role(Base):
+    __tablename__ = "roles"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), default="ROLE_USER")  # Default to ROLE_USER
+
+class UserToRole(Base):
+    __tablename__ = "users_to_roles"
+    user_id = Column(Integer, primary_key=True)
+    role_id = Column(Integer, primary_key=True)
 
 class Crate(Base):
     __tablename__ = 'crates'
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(String(255), nullable=False, unique=True)
+    author = Column(String(255), index=True)
+    description = Column(String)  # Use String instead of Text for MySQL compatibility
+    license = Column(String(255)) 
+    readme_text = Column(String)  # Use String instead of Text for MySQL compatibility
 
-    id = Column(String, nullable=False, primary_key=True)
-    author = Column(String, index=True)
-    description = Column(String)
-    license = Column(String) 
-    readme_text = Column(String)
-
-class Depndencies(Base):
+class Dependencies(Base):
     __tablename__ ='dependencies'
-
-    crate = Column(String, index=True)
-    dependency = Column(String, index=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    crate_id = Column(Integer, index=True)
+    dependency = Column(String(255), index=True)
 
 class Versions(Base):
     __tablename__ = 'versions'
-
-    crate = Column(String, index=True)
-    version = Column(String)
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    crate_id = Column(Integer, index=True)
+    version = Column(String(255))
     upload_date = Column(DateTime)
-    uploader = Column(String)
+    uploader = Column(String(255))
     size = Column(Integer)
 
 class Tags(Base):
     __tablename__='tags'
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    crate_id = Column(Integer, index=True)
+    tag = Column(String(255), index=True)
 
-    crate = Column(String, index=True)
-    tag = Column(String, index=True)
+Base.metadata.create_all(bind=engine, checkfirst=True)
