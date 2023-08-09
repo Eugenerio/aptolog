@@ -3,6 +3,7 @@
 import PasswordInput from "@/components/passwordInput";
 import { FaTwitter, FaGithub } from "react-icons/fa";
 import React, { useState } from "react";
+import Link from "next/link";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -22,12 +23,37 @@ const LoginPage: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = () => {
-    // Handle login logic here
-  };
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-  const handleForgotPassword = () => {
-    // Handle forgot password logic here
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          },
+          body: new URLSearchParams({
+            grant_type: "password",
+            username: email,
+            password: password,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.access_token);
+        // Redirect or handle successful login
+      } else {
+        const errorData = await response.json();
+        // Handle login error, show an alert or error message
+        alert(errorData.detail); // Display the error message from the server
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
   const handleIconClick = (network: string) => {
@@ -35,9 +61,35 @@ const LoginPage: React.FC = () => {
     console.log(`Clicked on ${network}`);
   };
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    let response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          grant_type: "password",
+          username: email,
+          password,
+        }),
+      }
+    );
+
+    let result = await response.json();
+
+    alert(result.message);
+  };
+
   return (
     <div className="bg-black w-full h-screen flex items-center justify-center">
-      <div className="bg-black w-[580px] p-8 text-white rounded-lg">
+      <form
+        className="bg-black w-[580px] p-8 text-white rounded-lg"
+        onSubmit={handleSubmit}
+      >
         <h1 className="text-5xl mb-9 text-center uppercase font-sf-pixelate-bold">
           LOG_IN
         </h1>
@@ -50,12 +102,11 @@ const LoginPage: React.FC = () => {
             className="font-sf-pixelate  w-full p-4 bg-transparent text-white border-white border rounded-none"
           />
         </div>
-        <span
-          onClick={handleForgotPassword}
-          className="text-sm float-right block underline cursor-pointer mt-1 mb-10 hover:text-gray-300 "
-        >
-          FORGOT PASSWORD?
-        </span>
+        <Link legacyBehavior href="/resetpassword">
+          <a className="text-sm float-right block underline cursor-pointer mt-1 mb-10 hover:text-gray-300 ">
+            FORGOT PASSWORD?
+          </a>
+        </Link>
         <PasswordInput
           value={password}
           showPassword={showPassword}
@@ -63,16 +114,21 @@ const LoginPage: React.FC = () => {
           onToggleShowPassword={handleShowPassword}
         />
         <div className="flex justify-center">
-          <button
-            onClick={handleLogin}
-            className="px-7 py-3 bg-[#1b1b1b] text-white border border-white rounded-none cursor-pointer mb-6 hover:bg-white hover:text-black uppercase"
-          >
-            To my account
-          </button>
+          <Link legacyBehavior href="/">
+            <button
+              type="submit"
+              onClick={handleLogin}
+              className="px-7 py-3 bg-[#1b1b1b] text-white border border-white rounded-none cursor-pointer mb-6 hover:bg-white hover:text-black uppercase"
+            >
+              To my account
+            </button>
+          </Link>
         </div>
-        <span className="block text-center text-sm underline cursor-pointer mb-10 hover:text-gray-300">
-          CREATE AN ACCOUNT
-        </span>
+        <Link legacyBehavior href="/signup">
+          <span className="block text-center text-sm underline cursor-pointer mb-10 hover:text-gray-300">
+            CREATE AN ACCOUNT
+          </span>
+        </Link>
         <div className="flex justify-center space-x-10">
           {/* Twitter Icon */}
           <div
@@ -133,7 +189,7 @@ const LoginPage: React.FC = () => {
             />
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

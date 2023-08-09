@@ -12,6 +12,7 @@ from schemas import TokenData
 
 SECRET_KEY = "b7d8e69bd8f9df2fa9b8635e30f6357426f5fe4069548f0ec0b5fa5d076195ce"
 ALGORITHM = 'HS256'
+ACCESS_TOKEN_EXPIRE_TIME = timedelta(days=30)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -25,7 +26,7 @@ def get_password_hash(password):
 
 def authenticate_user(username: str, password: str):
     with Session(engine) as session:
-        results = session.query(User).filter(User.username == username)
+        results = session.query(User).filter((User.username == username) | (User.email == username))
         user = results.first()
 
         if not user:
@@ -34,12 +35,9 @@ def authenticate_user(username: str, password: str):
             return False
         return user
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: timedelta = ACCESS_TOKEN_EXPIRE_TIME):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

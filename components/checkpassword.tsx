@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface CheckPasswordProps {
   value: string;
@@ -16,18 +16,20 @@ const CheckPassword: React.FC<CheckPasswordProps> = ({
   return (
     <div className="mb-8 relative">
       <input
-        type={showPasswordCheck ? 'text' : 'password'}
+        type={showPasswordCheck ? "text" : "password"}
         value={value}
         onChange={onChange}
         placeholder="PASSWORD"
         className="font-sf-pixelate w-full p-4 bg-transparent text-white border-white border rounded-none pr-[100px]"
       />
-      <span className="absolute top-[50%] right-20 -translate-y-1/2 cursor-pointer mx-2">|</span>
+      <span className="absolute top-[50%] right-20 -translate-y-1/2 cursor-pointer mx-2">
+        |
+      </span>
       <span
         onClick={onToggleShowPasswordCheck}
-        className="absolute top-[50%] right-4 -translate-y-1/2 cursor-pointer mx-2"
+        className="absolute font-sf-pixelate top-[50%] right-4 -translate-y-1/2 cursor-pointer mx-2"
       >
-        {showPasswordCheck ? 'HIDE' : 'SHOW'}
+        {showPasswordCheck ? "HIDE" : "SHOW"}
       </span>
     </div>
   );

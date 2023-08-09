@@ -22,12 +22,12 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         placeholder="PASSWORD"
         className="font-sf-pixelate w-full p-4 bg-transparent text-white border-white border rounded-none pr-[100px]"
       />
-      <span className="absolute top-[77.5%] right-20 -translate-y-1/2 cursor-pointer mx-2">
+      <span className="absolute top-[50%] right-20 -translate-y-1/2 cursor-pointer mx-2">
         |
       </span>
       <span
         onClick={onToggleShowPassword}
-        className="font-sf-pixelate absolute top-[77.5%] right-4 -translate-y-1/2 cursor-pointer mx-2 "
+        className="absolute font-sf-pixelate top-[50%] right-4 -translate-y-1/2 cursor-pointer mx-2"
       >
         {showPassword ? "HIDE" : "SHOW"}
       </span>

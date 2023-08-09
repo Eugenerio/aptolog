@@ -10,10 +10,8 @@ from schemas import LogInRequest, Token, UserIn, UserRead, TokenJson
 
 router = APIRouter(prefix="/api/auth")
 
-ACCESS_TOKEN_EXPIRE_MITUNES = 43200
-
 @router.post("/token", response_model=Token)
-def login_for_access_token(
+def get_token(
     form_data: OAuth2PasswordRequestForm = Depends()
 ):
     user = authenticate_user(form_data.username, form_data.password)
@@ -23,14 +21,11 @@ def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MITUNES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+    access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, 'token_type':"bearer"}
 
 @router.post("/login", response_model=TokenJson)
-def login_for_access_token(login_request: LogInRequest):
+def login(login_request: LogInRequest):
     user = authenticate_user(login_request.username, login_request.password)
     
     if not user:
@@ -42,13 +37,10 @@ def login_for_access_token(login_request: LogInRequest):
         )
     
     # Print the hashed password for debugging purposes
-    hashed_password = get_password_hash(login_request.password)
-    print(f"Input password hash: {hashed_password}")
+    # hashed_password = get_password_hash(login_request.password)
+    # print(f"Input password hash: {hashed_password}")
     
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MITUNES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+    access_token = create_access_token(data={"sub": user.username})
     return {"token": access_token, 'token_type':"bearer"}
 
 
@@ -61,7 +53,7 @@ def read_user_me(current_user: User = Depends(get_current_active_user)):
 def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
-@router.post("/singup", response_model=UserRead)
+@router.post("/signup", response_model=UserRead)
 def sing_up(user: UserIn, session: Session = Depends(get_session)):
     existing_user = session.query(User).filter(User.email == user.email).first()
     if existing_user:
@@ -84,4 +76,6 @@ def sing_up(user: UserIn, session: Session = Depends(get_session)):
         session.commit()
 
     session.refresh(new_user)
-    return UserRead(username=new_user.username, email=new_user.email)
+
+    access_token = create_access_token(data={"sub": user.username})
+    return {"token": access_token, 'token_type':"bearer"}

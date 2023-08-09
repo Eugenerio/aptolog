@@ -1,17 +1,20 @@
 "use client";
 
-import PasswordInput from '@/components/passwordInput';
-import { FaTwitter, FaGithub } from 'react-icons/fa';
-import React, { useState } from 'react';
-import CheckPassword from '@/components/checkpassword';
+import PasswordInput from "@/components/passwordInput";
+import { FaTwitter, FaGithub } from "react-icons/fa";
+import React, { useState } from "react";
+import CheckPassword from "@/components/checkpassword";
+import Link from "next/link";
 
 const SingUp: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordcheck, setPasswordCheck] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordCheck, setPasswordCheck] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordCheck, setShowPasswordCheck] = useState(false);
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+
+  const isPasswordMatching = password === passwordCheck;
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -21,9 +24,11 @@ const SingUp: React.FC = () => {
     setPassword(e.target.value);
   };
 
-  const handlePasswordCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordCheckChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setPasswordCheck(e.target.value);
-  }
+  };
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -31,14 +36,55 @@ const SingUp: React.FC = () => {
 
   const handleShowPasswordCheck = () => {
     setShowPasswordCheck(!showPasswordCheck);
-  }
-
-  const handleLogin = () => {
-    // Handle login logic here
   };
 
-  const handleForgotPassword = () => {
-    // Handle forgot password logic here
+  const handleSignup = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        // Handle successful signup, such as showing a success message
+      } else {
+        // Handle signup error, show an alert or error message
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    let response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          username: email,
+          password,
+        }),
+      }
+    );
+
+    let result = await response.json();
+
+    alert(result.message);
   };
 
   const handleIconClick = (network: string) => {
@@ -48,9 +94,14 @@ const SingUp: React.FC = () => {
 
   return (
     <div className="bg-black w-full h-screen flex items-center justify-center">
-      <div className="bg-black w-[580px] p-8 text-white rounded-lg">
-        <h1 className="text-5xl mb-9 text-center uppercase font-sf-pixelate-bold">Sign_UP</h1>
-        <div className="mb-1 mt-1">
+      <form
+        className="bg-black w-[580px] p-8 text-white rounded-lg"
+        onSubmit={handleSubmit}
+      >
+        <h1 className="text-5xl mb-9 text-center uppercase font-sf-pixelate-bold">
+          SIGN_UP
+        </h1>
+        <div className="mb-9 mt-1">
           <input
             type="email"
             value={email}
@@ -59,12 +110,6 @@ const SingUp: React.FC = () => {
             className="font-sf-pixelate w-full p-4 bg-transparent text-white border-white border rounded-none"
           />
         </div>
-        <span
-          onClick={handleForgotPassword}
-          className="cursor-pointer text-sm float-right block underline  mt-1 mb-10 hover:text-gray-300 "
-        >
-          FORGOT PASSWORD?
-        </span>
         <PasswordInput
           value={password}
           showPassword={showPassword}
@@ -72,74 +117,89 @@ const SingUp: React.FC = () => {
           onToggleShowPassword={handleShowPassword}
         />
         <CheckPassword
-          value={passwordcheck}
+          value={passwordCheck}
           showPasswordCheck={showPasswordCheck}
           onChange={handlePasswordCheckChange}
           onToggleShowPasswordCheck={handleShowPasswordCheck}
         />
         <div className="flex justify-center">
+          {/* <Link legacyBehavior href="/login"> */}
           <button
-            onClick={handleLogin}
-            className="px-7 py-3 bg-[#1b1b1b] text-white border border-white rounded-none cursor-pointer mb-6  hover:bg-white hover:text-black uppercase"
+            type="submit"
+            onClick={handleSignup}
+            className="px-7 py-3 bg-[#1b1b1b] text-white border border-white rounded-none cursor-pointer mb-6 hover:bg-white hover:text-black uppercase"
+            disabled={!isPasswordMatching} // Disable the button when passwords don't match
           >
-            To my account
+            Create Account
           </button>
+          {/* </Link> */}
         </div>
-        <span className="block text-center text-sm underline cursor-pointer mb-10 hover:text-gray-300">
-          CREATE AN ACCOUNT
-        </span>
+        <Link legacyBehavior href="/login">
+          <span className="block text-center text-sm underline cursor-pointer mb-10 hover:text-gray-300">
+            I HAVE AN ACCOUNT
+          </span>
+        </Link>
         <div className="flex justify-center space-x-10">
-          
           {/* Twitter Icon */}
           <div
             className={`p-4 cursor-pointer flex items-center justify-center transition-colors ${
-              hoveredIcon === 'Twitter' ? 'bg-white' : 'bg-[#1b1b1b] hover:bg-white'
+              hoveredIcon === "Twitter"
+                ? "bg-white"
+                : "bg-[#1b1b1b] hover:bg-white"
             } border border-white`}
-            style={{ width: '60px', height: '60px' }}
-            onMouseEnter={() => setHoveredIcon('Twitter')}
+            style={{ width: "60px", height: "60px" }}
+            onMouseEnter={() => setHoveredIcon("Twitter")}
             onMouseLeave={() => setHoveredIcon(null)}
-            onClick={() => handleIconClick('Twitter')}
+            onClick={() => handleIconClick("Twitter")}
           >
             <FaTwitter
-              className={`${hoveredIcon === 'Twitter' ? 'text-black' : 'text-white'}`}
+              className={`${
+                hoveredIcon === "Twitter" ? "text-black" : "text-white"
+              }`}
               size={24}
             />
           </div>
-          
+
           {/* Martian Wallet Icon */}
           <div
             className={`p-4 cursor-pointer flex items-center justify-center transition-colors ${
-              hoveredIcon === 'Wallet' ? 'bg-white' : 'bg-[#1b1b1b] hover:bg-white'
+              hoveredIcon === "Wallet"
+                ? "bg-white"
+                : "bg-[#1b1b1b] hover:bg-white"
             } border border-white`}
-            style={{ width: '60px', height: '60px' }}
-            onMouseEnter={() => setHoveredIcon('Wallet')}
+            style={{ width: "60px", height: "60px" }}
+            onMouseEnter={() => setHoveredIcon("Wallet")}
             onMouseLeave={() => setHoveredIcon(null)}
-            onClick={() => handleIconClick('Wallet')}
+            onClick={() => handleIconClick("Wallet")}
           >
             <img
-              src="/martianwallet.svg"  // Path to the SVG file in the public folder
+              src="/martianwallet.svg" // Path to the SVG file in the public folder
               alt="Martian Wallet"
-              className={`${hoveredIcon === 'Wallet' ? 'invert' : ''}`}
+              className={`${hoveredIcon === "Wallet" ? "invert" : ""}`}
             />
           </div>
-          
+
           {/* GitHub Icon */}
           <div
             className={`p-4 cursor-pointer flex items-center justify-center transition-colors ${
-              hoveredIcon === 'GitHub' ? 'bg-white' : 'bg-[#1b1b1b] hover:bg-white'
+              hoveredIcon === "GitHub"
+                ? "bg-white"
+                : "bg-[#1b1b1b] hover:bg-white"
             } border border-white`}
-            style={{ width: '60px', height: '60px' }}
-            onMouseEnter={() => setHoveredIcon('GitHub')}
+            style={{ width: "60px", height: "60px" }}
+            onMouseEnter={() => setHoveredIcon("GitHub")}
             onMouseLeave={() => setHoveredIcon(null)}
-            onClick={() => handleIconClick('GitHub')}
+            onClick={() => handleIconClick("GitHub")}
           >
             <FaGithub
-              className={`${hoveredIcon === 'GitHub' ? 'text-black' : 'text-white'}`}
+              className={`${
+                hoveredIcon === "GitHub" ? "text-black" : "text-white"
+              }`}
               size={24}
             />
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
