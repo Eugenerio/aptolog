@@ -1,52 +1,139 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Text
+from sqlalchemy.orm import relationship
 from database import Base, engine
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, unique=True, primary_key=True, index=True)
-    username = Column(String(255))
-    email = Column(String(255), unique=True)
-    profile_picture = Column(String(255))
-    password = Column(String(255), unique=True)
-
-class Role(Base):
-    __tablename__ = "roles"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), default="ROLE_USER")  # Default to ROLE_USER
 
 class UserToRole(Base):
     __tablename__ = "users_to_roles"
     user_id = Column(Integer, primary_key=True)
     role_id = Column(Integer, primary_key=True)
 
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    username = Column(String(255), unique=True, nullable=False)
+    email = Column(String(255), unique=True, nullable=False)
+    profile_picture = Column(String(255))
+    password = Column(String(255), nullable=False)
+    crates = relationship(
+        "Crate",
+        foreign_keys="Crate.author_id",
+        primaryjoin="User.id == Crate.author_id",
+        back_populates="author",
+    )
+    roles = relationship(
+        "Role",
+        secondary="users_to_roles",
+        primaryjoin=id == UserToRole.user_id,
+        secondaryjoin="UserToRole.role_id == Role.id",
+        back_populates="users",
+    )
+
+
+class Role(Base):
+    __tablename__ = "roles"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), default="ROLE_USER", nullable=False, unique=True)
+    users = relationship(
+        User,
+        secondary="users_to_roles",
+        primaryjoin=id == UserToRole.role_id,
+        secondaryjoin=UserToRole.user_id == User.id,
+        back_populates="roles",
+    )
+
+
+class Dependency(Base):
+    __tablename__ = "dependencies"
+    crate_id = Column(Integer, primary_key=True)
+    dependency_id = Column(Integer, primary_key=True)
+    crate = relationship(
+        "Crate",
+        foreign_keys=crate_id,
+        primaryjoin="Crate.id == crate_id",
+        back_populates="dependents",
+    )
+    dependency = relationship(
+        "Crate",
+        foreign_keys=dependency_id,
+        primaryjoin="Crate.id == dependency_id",
+        back_populates="dependencies",
+    )
+
+
 class Crate(Base):
-    __tablename__ = 'crates'
+    __tablename__ = "crates"
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String(255), nullable=False, unique=True)
-    author = Column(String(255), index=True)
-    description = Column(String)  # Use String instead of Text for MySQL compatibility
-    license = Column(String(255)) 
-    readme_text = Column(String)  # Use String instead of Text for MySQL compatibility
+    author_id = Column(Integer, index=True, nullable=False)
+    description = Column(Text, nullable=True)  # Nullable if needed
+    license = Column(String(255), nullable=True)  # Nullable if needed
+    readme_text = Column(Text, nullable=True)  # Nullable if needed
+    author = relationship(
+        User,
+        foreign_keys=author_id,
+        primaryjoin=User.id == author_id,
+        back_populates="crates",
+    )
+    versions = relationship(
+        "Version",
+        foreign_keys="Version.crate_id",
+        primaryjoin="Crate.id == Version.crate_id",
+        back_populates="crate",
+    )
+    dependencies = relationship(
+        "Crate",
+        secondary="dependencies",
+        primaryjoin=id == Dependency.crate_id,
+        secondaryjoin=Dependency.dependency_id == id,
+        back_populates="dependents",
+    )
+    dependents = relationship(
+        "Crate",
+        secondary="dependencies",
+        primaryjoin=id == Dependency.dependency_id,
+        secondaryjoin=Dependency.crate_id == id,
+        back_populates="dependencies",
+    )
+    tags = relationship(
+        "Tags",
+        foreign_keys="Tags.id",
+        primaryjoin="Crate.id == Tags.crate_id",
+        back_populates="crate",
+    )
 
-class Dependencies(Base):
-    __tablename__ ='dependencies'
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    crate_id = Column(Integer, index=True)
-    dependency = Column(String(255), index=True)
 
-class Versions(Base):
-    __tablename__ = 'versions'
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    crate_id = Column(Integer, index=True)
-    version = Column(String(255))
-    upload_date = Column(DateTime)
-    uploader = Column(String(255))
-    size = Column(Integer)
+class Version(Base):
+    __tablename__ = "versions"
+    crate_id = Column(Integer, primary_key=True)
+    version = Column(String(255), primary_key=True)
+    upload_date = Column(DateTime, nullable=False)
+    uploader_id = Column(Integer, nullable=False)
+    size = Column(Integer, nullable=False)
+    crate = relationship(
+        Crate,
+        foreign_keys=crate_id,
+        primaryjoin=Crate.id == crate_id,
+        back_populates="versions",
+    )
+    uploader = relationship(
+        User,
+        foreign_keys=uploader_id,
+        primaryjoin=User.id == uploader_id,
+    )
 
-class Tags(Base):
-    __tablename__='tags'
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    crate_id = Column(Integer, index=True)
-    tag = Column(String(255), index=True)
 
-Base.metadata.create_all(bind=engine, checkfirst=True)
+class Tag(Base):
+    __tablename__ = "tags"
+    crate_id = Column(Integer, primary_key=True)
+    tag = Column(String(255), primary_key=True)
+    crate = relationship(
+        Crate,
+        foreign_keys=crate_id,
+        primaryjoin=Crate.id == crate_id,
+        back_populates="tags",
+    )
+
+
+# Base.metadata.create_all(bind=engine, checkfirst=True)
