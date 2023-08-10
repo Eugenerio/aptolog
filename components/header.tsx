@@ -65,7 +65,11 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <div>
                 <div
-                  className="p-2 cursor-pointer flex items-center justify-center transition-colors bg-black hover:bg-white border border-white rounded"
+                  className={`p-2 cursor-pointer flex items-center justify-center transition-colors bg-black hover:bg-white border border-white rounded${
+                    hoveredIcon === "User"
+                      ? "bg-white"
+                      : "bg-black hover:bg-white"
+                  } border border-white rounded-none`}
                   onClick={handleUserMenuClick}
                 >
                   <div className="flex items-center">
@@ -77,7 +81,9 @@ const Header: React.FC = () => {
                     />
                     <FontAwesomeIcon
                       icon={faUser}
-                      className="text-white text-2xl"
+                      className={`text-white text-2xl ${
+                        hoveredIcon === "User" ? "text-black" : "" // Apply black text color on icon hover
+                      }`}
                     />
                   </div>
                 </div>

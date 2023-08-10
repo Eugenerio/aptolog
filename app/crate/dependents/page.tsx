@@ -9,9 +9,23 @@ import VersionCrate from "@/components/version";
 import SimpleCrate from "@/components/sipleCrate";
 import Crate from "@/components/crate";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [activeButton, setActiveButton] = useState("Sort Packages");
+  const router = useRouter();
+
+  const handleGoToVersions = () => {
+    router.push("/crate/versions");
+  };
+
+  const handleGoToDependencies = () => {
+    router.push("/crate/dependencies");
+  };
+
+  const handleGoToReadme = () => {
+    router.push("/crate/readme");
+  };
   // Sample data for crates (can be replaced with data fetched from an API or database)
   const cratesData = [
     {
@@ -84,13 +98,22 @@ export default function Home() {
         </div>
       </div>
       <div className="flex justify-center space-x-10 mb-20 mt-20">
-        <button className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black">
+        <button
+          onClick={handleGoToReadme}
+          className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black"
+        >
           Readme
         </button>
-        <button className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black">
+        <button
+          onClick={handleGoToVersions}
+          className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black"
+        >
           Versions
         </button>
-        <button className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black">
+        <button
+          onClick={handleGoToDependencies}
+          className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black"
+        >
           Dependencies
         </button>
         <button className="bg-[#1b1b1b] flex justify-center w-60 h-10 items-center text-white  cursor-pointer hover:bg-white hover:text-black">

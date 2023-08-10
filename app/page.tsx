@@ -8,16 +8,18 @@ import StaticBox from "@/components/statisticsBox";
 import Card from "@/components/card";
 import Crate from "@/components/crate";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [email, setEmail] = useState("");
+  const router = useRouter();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
   const handleGetStarted = () => {
-    // handle get stardet button logic
+    router.push("/first");
   };
 
   const handleSubscribe = () => {

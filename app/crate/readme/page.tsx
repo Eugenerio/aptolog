@@ -6,8 +6,23 @@ import Footer from "@/components/footer";
 import "@/app/globals.css";
 import StaticBox from "@/components/statisticsBox";
 import Documentation from "@/components/readme";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleGoToVersions = () => {
+    router.push("/crate/versions");
+  };
+
+  const handleGoToDependencies = () => {
+    router.push("/crate/dependencies");
+  };
+
+  const handleGoToDependents = () => {
+    router.push("/crate/dependents");
+  };
+
   return (
     <div>
       <div>
@@ -50,13 +65,22 @@ export default function Home() {
         <button className="bg-[#1b1b1b] flex justify-center w-60 h-10 items-center text-white  cursor-pointer hover:bg-white hover:text-black">
           Readme
         </button>
-        <button className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black">
+        <button
+          onClick={handleGoToVersions}
+          className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black"
+        >
           Versions
         </button>
-        <button className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black">
+        <button
+          onClick={handleGoToDependencies}
+          className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black"
+        >
           Dependencies
         </button>
-        <button className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black">
+        <button
+          onClick={handleGoToDependents}
+          className="bg-[#131313] flex justify-center w-60 h-10 items-center text-[#999999]  cursor-pointer hover:bg-white hover:text-black"
+        >
           Dependents
         </button>
       </div>

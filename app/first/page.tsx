@@ -5,9 +5,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import "@/app/globals.css";
 import StaticBox from "@/components/statisticsBox";
-import Card from "@/components/card";
 import Crate from "@/components/crate";
-import Image from "next/image";
 import SearchBar from "@/components/searchbar";
 
 export default function Home() {
