@@ -5,9 +5,9 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import "@/app/globals.css";
 import StaticBox from "@/components/statisticsBox";
-import Crate from "@/components/crate";
 import Image from "next/image";
 import SearchBar from "@/components/searchbar";
+import EditCrate from "@/components/editableCrate";
 
 export default function History() {
   const [search, setSearch] = useState("");
@@ -186,7 +186,7 @@ export default function History() {
         <div className="flex justify-center items-center">
           <div className="flex flex-col gap-10 w-[1116px]">
             {cratesData.map((crate, index) => (
-              <Crate
+              <EditCrate
                 key={index}
                 name={crate.name}
                 description={crate.description}

@@ -1,10 +1,13 @@
 "use client";
 
-import PasswordInput from "@/components/passwordInput";
 import { FaTwitter, FaGithub } from "react-icons/fa";
 import React, { useState } from "react";
 import CheckPassword from "@/components/checkpassword";
 import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import PasswordInputSignUp from "@/components/passwordImputSignup";
 
 const SingUp: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +16,12 @@ const SingUp: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordCheck, setShowPasswordCheck] = useState(false);
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+
+  const isSaveEnabled =
+    password === passwordCheck && passwordCheck.trim() !== "";
+
+  const { setAccessToken } = useAuth();
+  const router = useRouter();
 
   const isPasswordMatching = password === passwordCheck;
 
@@ -38,9 +47,11 @@ const SingUp: React.FC = () => {
     setShowPasswordCheck(!showPasswordCheck);
   };
 
-  const handleSignup = async () => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     try {
-      const response = await fetch(
+      let response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
         {
           method: "POST",
@@ -48,43 +59,25 @@ const SingUp: React.FC = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: email,
-            password: password,
+            email,
+            username: email,
+            password,
           }),
         }
       );
 
+      let result = await response.json();
+
       if (response.ok) {
         // Handle successful signup, such as showing a success message
+        setAccessToken(result.token);
+        router.push("/");
       } else {
         // Handle signup error, show an alert or error message
       }
     } catch (error) {
       console.error("Signup error:", error);
     }
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    let response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          username: email,
-          password,
-        }),
-      }
-    );
-
-    let result = await response.json();
-
-    alert(result.message);
   };
 
   const handleIconClick = (network: string) => {
@@ -101,7 +94,7 @@ const SingUp: React.FC = () => {
         <h1 className="text-5xl mb-9 text-center uppercase font-sf-pixelate-bold">
           SIGN_UP
         </h1>
-        <div className="mb-9 mt-1">
+        <div className=" mt-1">
           <input
             type="email"
             value={email}
@@ -110,12 +103,14 @@ const SingUp: React.FC = () => {
             className="font-sf-pixelate w-full p-4 bg-transparent text-white border-white border rounded-none"
           />
         </div>
-        <PasswordInput
-          value={password}
-          showPassword={showPassword}
-          onChange={handlePasswordChange}
-          onToggleShowPassword={handleShowPassword}
-        />
+        <div className="mt-9">
+          <PasswordInputSignUp
+            value={password}
+            showPassword={showPassword}
+            onChange={handlePasswordChange}
+            onToggleShowPassword={handleShowPassword}
+          />
+        </div>
         <CheckPassword
           value={passwordCheck}
           showPasswordCheck={showPasswordCheck}
@@ -123,16 +118,15 @@ const SingUp: React.FC = () => {
           onToggleShowPasswordCheck={handleShowPasswordCheck}
         />
         <div className="flex justify-center">
-          {/* <Link legacyBehavior href="/login"> */}
           <button
             type="submit"
-            onClick={handleSignup}
-            className="px-7 py-3 bg-[#1b1b1b] text-white border border-white rounded-none cursor-pointer mb-6 hover:bg-white hover:text-black uppercase"
-            disabled={!isPasswordMatching} // Disable the button when passwords don't match
+            className={`px-7 py-3 bg-[#1b1b1b] text-white border border-white rounded-none cursor-pointer mb-6 hover:bg-white hover:text-black uppercase ${
+              isSaveEnabled ? "" : "opacity-50 cursor-not-allowed"
+            }`}
+            disabled={!isSaveEnabled}
           >
             Create Account
           </button>
-          {/* </Link> */}
         </div>
         <Link legacyBehavior href="/login">
           <span className="block text-center text-sm underline cursor-pointer mb-10 hover:text-gray-300">
@@ -172,10 +166,12 @@ const SingUp: React.FC = () => {
             onMouseLeave={() => setHoveredIcon(null)}
             onClick={() => handleIconClick("Wallet")}
           >
-            <img
-              src="/martianwallet.svg" // Path to the SVG file in the public folder
+            <Image
+              src="/martianwallet.svg"
               alt="Martian Wallet"
               className={`${hoveredIcon === "Wallet" ? "invert" : ""}`}
+              width={28}
+              height={28}
             />
           </div>
 

@@ -60,34 +60,80 @@ const Popup: React.FC<PopupProps> = ({ onCancel, onConfirm }) => {
   );
 };
 
-interface CrateProps {
+interface EditCrateProps {
   name: string;
   version: string;
   description: string;
   author?: string;
   date: string;
+  delete?: () => void;
 }
 
-const Crate: React.FC<CrateProps> = ({
+const EditCrate: React.FC<EditCrateProps> = ({
   name,
   version,
   description,
   author,
   date,
+  delete: handleDelete,
 }) => {
   const [hovered, setHovered] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ left: 0, top: 0 });
 
   const handleHover = (event: React.MouseEvent) => {
     setHovered(!hovered);
+    const rect = event.currentTarget.getBoundingClientRect();
+    setPopupPosition({
+      left: rect.left + rect.width + 10, // Adjust the positioning as needed
+      top: rect.top, // Adjust the positioning as needed
+    });
+  };
+
+  const handleDeleteClick = () => {
+    setShowPopup(true);
+  };
+
+  const handlePopupCancel = () => {
+    setShowPopup(false);
+  };
+
+  const handlePopupConfirm = () => {
+    setShowPopup(false);
+    if (handleDelete) {
+      handleDelete();
+    }
   };
 
   return (
-    <div className="bg-[#1b1b1b] flex flex-col justify-center gap-6 w-full p-8">
+    <div
+      className="bg-[#1b1b1b] flex flex-col justify-center gap-6 w-full p-8"
+      onMouseEnter={handleHover}
+      onMouseLeave={handleHover}
+    >
       <div className="flex flex-row justify-between items-center">
         <div className="text-2xl font-sans font-medium text-[#fafafa] mb-px w-[114px]">
           {name}
         </div>
         <div className="text-2xl font-sans text-[#fafafa] w-12 ">{version}</div>
+        <div className="mr-0 flex ">
+          <FontAwesomeIcon
+            icon={faTrash}
+            className="text-white cursor-pointer"
+            onClick={handleDeleteClick}
+          />
+        </div>
+        {showPopup && (
+          <StyledPopup
+            id="PopUpRoot"
+            style={{ left: popupPosition.left, top: popupPosition.top }}
+          >
+            <Popup
+              onCancel={handlePopupCancel}
+              onConfirm={handlePopupConfirm}
+            />
+          </StyledPopup>
+        )}
       </div>
       <div
         className={`whitespace-normal text-base w-[800px] font-sans text-[#cccccc] self-start ${
@@ -108,4 +154,4 @@ const Crate: React.FC<CrateProps> = ({
   );
 };
 
-export default Crate;
+export default EditCrate;

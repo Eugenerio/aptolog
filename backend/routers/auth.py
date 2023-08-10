@@ -6,11 +6,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from database import get_session 
 from dependencies.auth import authenticate_user, create_access_token, get_current_active_user, get_password_hash
 from models import User, Role, UserToRole 
-from schemas import LogInRequest, Token, UserIn, UserRead, TokenJson
+from schemas import LogInRequest, UserIn, UserRead, TokenJson
 
 router = APIRouter(prefix="/api/auth")
 
-@router.post("/token", response_model=Token)
+@router.post("/token", response_model=TokenJson)
 def get_token(
     form_data: OAuth2PasswordRequestForm = Depends()
 ):
@@ -22,7 +22,7 @@ def get_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(data={"sub": user.username})
-    return {"access_token": access_token, 'token_type':"bearer"}
+    return {"token": access_token, 'token_type':"bearer"}
 
 @router.post("/login", response_model=TokenJson)
 def login(login_request: LogInRequest):
@@ -53,7 +53,7 @@ def read_user_me(current_user: User = Depends(get_current_active_user)):
 def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
-@router.post("/signup", response_model=UserRead)
+@router.post("/signup", response_model=TokenJson)
 def sing_up(user: UserIn, session: Session = Depends(get_session)):
     existing_user = session.query(User).filter(User.email == user.email).first()
     if existing_user:

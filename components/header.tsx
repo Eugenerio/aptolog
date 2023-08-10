@@ -1,14 +1,32 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
+import {
+  faSearch,
+  faUser,
+  faAngleDown,
+} from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth"; // Import the AuthContext hook
+import { useRouter } from "next/navigation";
 
 const Header: React.FC = () => {
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+  const [userMenuVisible, setUserMenuVisible] = useState(false);
+  const { isAuthenticated, logout } = useAuth(); // Use the useAuth hook
 
-  const handleIconClick = (network: string) => {
-    // Handle the click action for each network (Twitter, Wallet, GitHub)
-    console.log(`Clicked on ${network}`);
+  const router = useRouter();
+
+  const handleIconClick = () => {
+    router.push("/search");
+  };
+
+  const handleUserMenuClick = () => {
+    setUserMenuVisible(!userMenuVisible);
+  };
+
+  const handleLogoutClick = () => {
+    logout();
   };
 
   return (
@@ -33,7 +51,7 @@ const Header: React.FC = () => {
               style={{ width: "40px", height: "40px" }}
               onMouseEnter={() => setHoveredIcon("Search")}
               onMouseLeave={() => setHoveredIcon(null)}
-              onClick={() => handleIconClick("Search")}
+              onClick={() => handleIconClick()}
             >
               <FontAwesomeIcon
                 icon={faSearch}
@@ -43,20 +61,76 @@ const Header: React.FC = () => {
               />
             </div>
           </div>
-          <div className="flex items-center">
-            <Link legacyBehavior href="/login">
-              <a className="font-sf-pixelate text-white cursor-pointer hover:text-gray-300 text-2xl">
-                LOG_IN
-              </a>
-            </Link>
-            <span className="font-sf-pixelate-bold text-white px-2 text-xl">
-              \
-            </span>
-            <Link legacyBehavior href="/signup">
-              <a className="font-sf-pixelate text-white cursor-pointer hover:text-gray-300 text-2xl">
-                SIGN_UP
-              </a>
-            </Link>
+          <div className="flex items-center relative group">
+            {isAuthenticated ? (
+              <div>
+                <div
+                  className="p-2 cursor-pointer flex items-center justify-center transition-colors bg-black hover:bg-white border border-white rounded"
+                  onClick={handleUserMenuClick}
+                >
+                  <div className="flex items-center">
+                    <FontAwesomeIcon
+                      icon={faAngleDown}
+                      className={`text-white text-sm mr-1 ${
+                        userMenuVisible ? "rotate-180" : ""
+                      }`}
+                    />
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      className="text-white text-2xl"
+                    />
+                  </div>
+                </div>
+                {userMenuVisible && (
+                  <div className="absolute right-0 mt-2 w-12 h-48 bg-[#1b1b1b] flex flex-col justify-between items-center py-6">
+                    <div className="flex flex-col items-center">
+                      <Link legacyBehavior href="/history">
+                        <Image
+                          src="https://file.rendit.io/n/KvrmHzqWmRJnZHMIgMBx.svg"
+                          alt="Menu Icon 1"
+                          width={24}
+                          height={24}
+                          className="mb-9 cursor-pointer"
+                        />
+                      </Link>
+                      <Link legacyBehavior href="/settings/profile">
+                        <Image
+                          src="https://file.rendit.io/n/MeKxCXdJB8OOfEzvIm7G.svg"
+                          alt="Menu Icon 2"
+                          width={24}
+                          height={24}
+                          className="mb-9 cursor-pointer"
+                        />
+                      </Link>
+                      <Image
+                        src="https://file.rendit.io/n/A0jJnOqiTvNJEbYM8h1t.svg"
+                        alt="Menu Icon 3"
+                        width={24}
+                        height={24}
+                        onClick={handleLogoutClick}
+                        className="cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link legacyBehavior href="/login">
+                  <a className="font-sf-pixelate text-white cursor-pointer hover:text-gray-300 text-2xl">
+                    LOG_IN
+                  </a>
+                </Link>
+                <span className="font-sf-pixelate-bold text-white px-2 text-xl">
+                  \
+                </span>
+                <Link legacyBehavior href="/signup">
+                  <a className="font-sf-pixelate text-white cursor-pointer hover:text-gray-300 text-2xl">
+                    SIGN_UP
+                  </a>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

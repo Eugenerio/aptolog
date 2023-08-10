@@ -101,7 +101,7 @@ export default function History() {
             />
           </div>
           <div className="flex space-x-8 mb-20">
-            <button className="bg-[#1b1b1b] flex flex-col justify-center w-60 h-10 items-center text-white text-2xl cursor-pointer hover:bg-white hover:text-black">
+            <button className="bg-[#1b1b1b] flex flex-col justify-center w-80 h-16 items-center text-white text-xl cursor-pointer hover:bg-white hover:text-black">
               Search results for &ldquo;absolut&rdquo;
             </button>
           </div>
