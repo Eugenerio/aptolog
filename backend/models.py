@@ -48,18 +48,6 @@ class Dependency(Base):
     __tablename__ = "dependencies"
     crate_id = Column(Integer, primary_key=True)
     dependency_id = Column(Integer, primary_key=True)
-    crate = relationship(
-        "Crate",
-        foreign_keys=crate_id,
-        primaryjoin="Crate.id == crate_id",
-        back_populates="dependents",
-    )
-    dependency = relationship(
-        "Crate",
-        foreign_keys=dependency_id,
-        primaryjoin="Crate.id == dependency_id",
-        back_populates="dependencies",
-    )
 
 
 class Crate(Base):
@@ -97,9 +85,9 @@ class Crate(Base):
         back_populates="dependencies",
     )
     tags = relationship(
-        "Tags",
-        foreign_keys="Tags.id",
-        primaryjoin="Crate.id == Tags.crate_id",
+        "Tag",
+        foreign_keys="Tag.crate_id",
+        primaryjoin="Crate.id == Tag.crate_id",
         back_populates="crate",
     )
 
@@ -134,6 +122,3 @@ class Tag(Base):
         primaryjoin=Crate.id == crate_id,
         back_populates="tags",
     )
-
-
-# Base.metadata.create_all(bind=engine, checkfirst=True)

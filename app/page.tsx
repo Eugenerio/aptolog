@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import "@/app/globals.css";
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [email, setEmail] = useState("");
+  // const [cratesData, setCratesData] = useState([]);
   const router = useRouter();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +26,22 @@ export default function Home() {
   const handleSubscribe = () => {
     // Handle login logic here
   };
+
+  // useEffect( () => {
+  //   const fetchCeate = async () => {
+  //     const { data } = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crates/`)
+  //   }
+
+  //   async function  // Modify the URL as needed
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       setCratesData(data); // Update the state with fetched data
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching crates:", error);
+  //     });
+  //     fetchData()
+  // }, []);
 
   // Sample data for crates (can be replaced with data fetched from an API or database)
   const cratesData = [
