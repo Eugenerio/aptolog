@@ -24,6 +24,7 @@ app.include_router(crates.router)
 
 origins = [
     "http://localhost:3000",
+    "https://aptolog-eugenerio.vercel.app",
 ]
 
 app.add_middleware(
