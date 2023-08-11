@@ -5,12 +5,13 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+import os
 
 from database import engine
 from models import User
 from schemas import TokenData
 
-SECRET_KEY = "b7d8e69bd8f9df2fa9b8635e30f6357426f5fe4069548f0ec0b5fa5d076195ce"
+SECRET_KEY = os.environ["AUTH_SECRET_KEY"]
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_TIME = timedelta(days=30)
 
