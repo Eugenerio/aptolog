@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     app_name: str = "Aptolog"
     db_host: str
@@ -7,7 +8,7 @@ class Settings(BaseSettings):
     db_password: str
     db_database: str
     db_port: str
+    auth_secret_key: str
 
     class Config:
-        env_file=".env"
-    
+        env_file = ".env"
