@@ -82,7 +82,11 @@ const Crate: React.FC<CrateProps> = ({
   };
 
   return (
-    <div className="bg-[#1b1b1b] flex flex-col justify-center gap-6 w-full p-8">
+    <div
+      className="bg-[#1b1b1b] flex flex-col justify-center gap-6 w-full p-8"
+      onMouseEnter={handleHover}
+      onMouseLeave={handleHover}
+    >
       <div className="flex flex-row justify-between items-center">
         <div className="text-2xl font-sans font-medium text-[#fafafa] mb-px w-[114px]">
           {name}
