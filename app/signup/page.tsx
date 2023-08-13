@@ -23,20 +23,20 @@ const SingUp: React.FC = () => {
   const { setAccessToken } = useAuth();
   const router = useRouter();
 
-  const isPasswordMatching = password === passwordCheck;
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handlePasswordCheckChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setPasswordCheck(e.target.value);
+  const handleInputChange = (field: string, value: string) => {
+    switch (field) {
+      case "email":
+        setEmail(value);
+        break;
+      case "password":
+        setPassword(value);
+        break;
+      case "passwordCheck":
+        setPasswordCheck(value);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleShowPassword = () => {
@@ -51,7 +51,7 @@ const SingUp: React.FC = () => {
     event.preventDefault();
 
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
         {
           method: "POST",
@@ -66,7 +66,7 @@ const SingUp: React.FC = () => {
         }
       );
 
-      let result = await response.json();
+      const result = await response.json();
 
       if (response.ok) {
         // Handle successful signup, such as showing a success message
@@ -86,7 +86,7 @@ const SingUp: React.FC = () => {
   };
 
   return (
-    <div className="bg-black w-full h-screen flex items-center justify-center">
+    <main className="bg-black w-full h-screen flex items-center justify-center">
       <form
         className="bg-black w-[580px] p-8 text-white rounded-lg"
         onSubmit={handleSubmit}
@@ -94,30 +94,35 @@ const SingUp: React.FC = () => {
         <h1 className="text-5xl mb-9 text-center uppercase font-sf-pixelate-bold">
           SIGN_UP
         </h1>
-        <div className=" mt-1">
+        <section className=" mb-9 mt-1">
           <input
             type="email"
             value={email}
-            onChange={handleEmailChange}
+            onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder="EMAIL"
             className="font-sf-pixelate w-full p-4 bg-transparent text-white border-white border rounded-none"
           />
-        </div>
-        <div className="mt-9">
+          <Link legacyBehavior href="/codesignup">
+            <span className="block mt-2 text-right text-sm underline cursor-pointer mb-10 hover:text-gray-300">
+              FORGOT PASSWORD?
+            </span>
+          </Link>
+        </section>
+        <section className="mt-9">
           <PasswordInputSignUp
             value={password}
             showPassword={showPassword}
-            onChange={handlePasswordChange}
+            onChange={(e) => handleInputChange("password", e.target.value)}
             onToggleShowPassword={handleShowPassword}
           />
-        </div>
+        </section>
         <CheckPassword
           value={passwordCheck}
           showPasswordCheck={showPasswordCheck}
-          onChange={handlePasswordCheckChange}
+          onChange={(e) => handleInputChange("passwordCheck", e.target.value)}
           onToggleShowPasswordCheck={handleShowPasswordCheck}
         />
-        <div className="flex justify-center">
+        <section className="flex justify-center">
           <button
             type="submit"
             className={`px-7 py-3 bg-[#1b1b1b] text-white border border-white rounded-none cursor-pointer mb-6 hover:bg-white hover:text-black uppercase ${
@@ -127,13 +132,13 @@ const SingUp: React.FC = () => {
           >
             Create Account
           </button>
-        </div>
+        </section>
         <Link legacyBehavior href="/login">
-          <span className="block text-center text-sm underline cursor-pointer mb-10 hover:text-gray-300">
+          <p className="block text-center text-sm underline cursor-pointer mb-10 hover:text-gray-300">
             I HAVE AN ACCOUNT
-          </span>
+          </p>
         </Link>
-        <div className="flex justify-center space-x-10">
+        <section className="flex justify-center space-x-10">
           {/* Twitter Icon */}
           <div
             className={`p-4 cursor-pointer flex items-center justify-center transition-colors ${
@@ -194,9 +199,9 @@ const SingUp: React.FC = () => {
               size={24}
             />
           </div>
-        </div>
+        </section>
       </form>
-    </div>
+    </main>
   );
 };
 

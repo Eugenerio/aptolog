@@ -24,12 +24,12 @@ const NewPassword: React.FC = () => {
   };
 
   return (
-    <div className="bg-black w-full h-screen flex items-center justify-center">
-      <div className="bg-black w-[580px] p-8 text-white rounded-lg">
+    <section className="bg-black w-full h-screen flex items-center justify-center">
+      <article className="bg-black w-[580px] p-8 text-white rounded-lg">
         <h1 className="text-3xl mb-2 text-center uppercase font-sf-pixelate-bold">
           NEW_PASSWORD
         </h1>
-        <p className="text-l mb-9 text-center uppercase font-sf-pixelate">
+        <p className="text-l mt-4 mb-9 text-center uppercase font-sf-pixelate">
           CREATE YOUR NEW PASSWORD!
         </p>
         <PasswordInput
@@ -52,8 +52,8 @@ const NewPassword: React.FC = () => {
         >
           BACK TO LOG IN
         </span>
-      </div>
-    </div>
+      </article>
+    </section>
   );
 };
 
