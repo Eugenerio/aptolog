@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 
 interface ReasonCardProps {
   title: string;
@@ -28,7 +28,7 @@ const Card: React.FC<ReasonCardProps> = ({ title, description }) => {
     <div
       ref={cardRef} // Reference to the card container
       className={`flex-1 flex flex-col items-center justify-center gap-[24px] rounded-none p-6 ${
-        isHovered ? 'bg-[#1b1b1b] text-black' : 'bg-grey text-light-grey'
+        isHovered ? "bg-[#1b1b1b] text-black" : "bg-grey text-light-grey"
       } card-container`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -37,7 +37,7 @@ const Card: React.FC<ReasonCardProps> = ({ title, description }) => {
         <div
           style={{ width: rectWidth }}
           className={`bg-white transition-transform transform ${
-            isHovered ? 'scale-x-1' : 'scale-x-0'
+            isHovered ? "scale-x-1" : "scale-x-0"
           } origin-bottom`}
         />
       </div>
